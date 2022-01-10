@@ -61,15 +61,15 @@
 ### Results
 
 - output:1 (operation mode : Draw)
-https://user-images.githubusercontent.com/69752829/148802457-cf18dc03-aa47-431a-8bb4-a55451782d05.mp4
+![Draw mode](https://user-images.githubusercontent.com/69752829/148802457-cf18dc03-aa47-431a-8bb4-a55451782d05.mp4)
 
 - output:2 (operation mode : Face )
-https://user-images.githubusercontent.com/69752829/148802384-c4b7904d-3f7e-467e-a9c7-5e01656820d1.mp4
+![Face mode](https://user-images.githubusercontent.com/69752829/148802384-c4b7904d-3f7e-467e-a9c7-5e01656820d1.mp4)
 
 - output:3 (operation mode : Filter)
-https://user-images.githubusercontent.com/69752829/148797658-6e32dc36-89ba-470e-b228-dd1032795bac.mp4
+![Filter mode](https://user-images.githubusercontent.com/69752829/148797658-6e32dc36-89ba-470e-b228-dd1032795bac.mp4)
 
 - output:4 (operation mode : Hands )
-https://user-images.githubusercontent.com/69752829/148800380-2ee83f46-c860-42c4-8146-7409aea4e56a.mp4
+![Hands mode](https://user-images.githubusercontent.com/69752829/148800380-2ee83f46-c860-42c4-8146-7409aea4e56a.mp4)
 
 ## If it's helpful for you then please give star Thank You :)
