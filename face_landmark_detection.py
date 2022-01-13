@@ -1,5 +1,7 @@
 import cv2
+# from numpy.core.fromnumeric import nonzero
 import mediapipe as mp
+import numpy as np
 from scipy.spatial.distance import euclidean
 
 class FaceAnalyzer:
@@ -46,6 +48,29 @@ class FaceAnalyzer:
         else:
             self.__mouth_open =False
 
+    @classmethod
+    def find_angle(cls,v0,v1):
+        angle = np.math.atan2(np.linalg.det([v0,v1]),np.dot(v0,v1))
+        return np.degrees(angle)
+
+
+    def face_alignment_detection(self,image):
+        left_eye_point = np.array(self.face_points[161])
+        right_eye_point = np.array(self.face_points[388])
+        third_point = np.array([right_eye_point[0],left_eye_point[1]])
+        angel = FaceAnalyzer.find_angle(third_point-left_eye_point , right_eye_point-left_eye_point)
+        rotated_status = None
+        d = right_eye_point[1] - left_eye_point[1]
+        if(d>0 and d>10):
+            rotated_status = "right-rotated",str(round(angel,2))
+        elif(d<0 and d<-10):
+            rotated_status = "left-rotated",str(round(angel,2))
+        else:
+            rotated_status = "straight",str(round(angel,2))
+        return rotated_status
+
+        # cv2.line(image,left_eye_point,right_eye_point,(0,255,0),3)
+
     def eye_blink_detect(self):
         """ Use face landmark points to recognize eye blink event and 
             maintain eye blink counter
@@ -54,7 +79,7 @@ class FaceAnalyzer:
         
         left_dist = euclidean(points[153],points[158])
         right_dist = euclidean(points[374],points[386])
-        if(left_dist<8 and right_dist<8):
+        if(left_dist<7 and right_dist<7):
             if(self.__blink_prev_status==0):
                 self.__blink_count+=1
             self.__blink_prev_status=1
@@ -117,32 +142,19 @@ class FaceAnalyzer:
             call to all available features
         """
         self.get_face_points(image)
-        cv2.rectangle(image,[30,30],[220,170],(255,255,255),-1)
+        cv2.rectangle(image,[20,30],[230,200],(255,255,255),-1)
         if(len(self.face_points)):
             self.eye_blink_detect()
             self.draw_lips_points()
+            align_status,align_angle = self.face_alignment_detection(image)
             emotion = self.face_emotion_detection()
-            cv2.putText(image,"Emotion : "+emotion,[50,50],cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 0, 0), 1) 
-        cv2.putText(image,"Blink : "+str(self.__blink_count),[50,100],cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 0, 0), 1) 
-        cv2.putText(image,"Mouth Open : "+str(self.__mouth_open),[50,150],cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 0, 0), 1) 
+            cv2.putText(image,"Emotion : "+emotion,[30,50],cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 0, 0), 1) 
+            cv2.putText(image,"Alignment : "+align_status,[30,80],cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 0, 0), 1) 
+            cv2.putText(image,"Align Angle : "+align_angle,[30,110],cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 0, 0), 1) 
+
+        cv2.putText(image,"Blink : "+str(self.__blink_count),[30,140],cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 0, 0), 1) 
+        cv2.putText(image,"Mouth Open : "+str(self.__mouth_open),[30,170],cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 0, 0), 1) 
         if(draw_mesh):
             for face_lm in self.__face_mesh_marks:
                 self.__mp_draw.draw_landmarks(image,face_lm,self.__mp_face_mesh.FACEMESH_CONTOURS )
         return image
-
-### driver code to test single module
-### to ensure that FaceAnalyzer module works properly 
-# if __name__=="__main__":
-#     cap = cv2.VideoCapture(0)
-#     cap.set(3,640)
-#     cap.set(4,480)
-#     f1 = FaceAnalyzer()
-#     while True:
-#         ret,im = cap.read()
-#         f1.process_frame(im)
-#         cv2.imshow("Image",im)
-#         k = cv2.waitKey(10)
-#         if(k==27):
-#             break
-#         elif(k==32):
-#             cv2.waitKey(-1)
